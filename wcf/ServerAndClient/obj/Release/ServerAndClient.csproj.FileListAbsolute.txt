@@ -1,0 +1,7 @@
+D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\bin\ServerAndClient.dll
+D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\bin\ServerAndClient.pdb
+D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\obj\Release\ServerAndClient.dll
+D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\obj\Release\ServerAndClient.pdb
+D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\bin\EntityFramework.dll
+D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\bin\EntityFramework.xml
+D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\obj\Release\ServerAndClient.csprojResolveAssemblyReference.cache
