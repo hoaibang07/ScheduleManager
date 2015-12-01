@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Calendar Sync</string>
+    <string name="title_activity_login">LoginActivity</string>
+
+    <string name="login">Login</string>
+    <string name="user_name">User name</string>
+    <string name="password">Password</string>
+    <string name="remember">Remember me</string>
+    <string name="splash_screen">Splash screen</string>
+    <string name="home">Home</string>
+    <string name="sync_up">Sync up</string>
+    <string name="sync_down">Sync down</string>
+    <string name="sync_history">Sync history</string>
+    <string name="calendar">Calendar</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="logout">Log out</string>
+    <string name="add">Add a new task</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="begin_time">Begin time</string>
+    <string name="task_name">Task name</string>
+    <string name="end_time">End time</string>
+    <string name="task_content">Task content</string>
+    <string name="place">Place</string>
+    <string name="date_sync">Số ngày đồng bộ</string>
+    <string name="color_setting">Màu</string>
+    <string name="sync_task">Công việc đã được đồng bộ</string>
+    <string name="nosync_task">Công việc chưa được đồng bộ</string>
+    <string name="msg_select_color">Select a color</string>
+    <string name="open_drawer">Open</string>
+    <string name="close_drawer">Close</string>
+</resources>
