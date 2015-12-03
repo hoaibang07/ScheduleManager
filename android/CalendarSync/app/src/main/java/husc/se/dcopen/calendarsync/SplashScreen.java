@@ -5,10 +5,11 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.webkit.WebView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -19,6 +20,7 @@ public class SplashScreen extends AppCompatActivity {
     public static final int SPLASH_TIME_OUT = 8000;
     private WebView webView;
     private TextView tvKhoiDong;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +87,7 @@ public class SplashScreen extends AppCompatActivity {
         private void moveActivity(int truongHop) {
             switch (truongHop) {
                 case 1: {
+                    //đăng nhập thành công
                     Intent intent = new Intent(SplashScreen.this, MainActivity.class);
 
                     Bundle bundle = new Bundle();
@@ -95,38 +98,52 @@ public class SplashScreen extends AppCompatActivity {
                     break;
                 }
                 case 0: {
-                    //thong bao dang nhap that bai (sai ten hoac mat khau) -> load login activity
+                    //đăng nhập thất bại (sai tên hoặc mật khẩu) -> load login activity
+                    createAlertDialog("Đăng nhập", "Sai tên đăng nhập hoặc mật khẩu", false).show();
                     Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
                     delay(intent);
+                    break;
                 }
                 case -1: {
-                    //load login activity
+                    //Không ghi nhớ tên đăng nhập và mật khẩu -> load main activity
                     Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
                     delay(intent);
+                    break;
                 }
                 case -2: {
-                    Toast.makeText(SplashScreen.this, "IOException", Toast.LENGTH_LONG).show();
+                    //đăng nhập thất bại (IOException) ->load login activity
+                    createAlertDialog("Đăng nhập", "IOException", false).show();
                     Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
                     delay(intent);
                     break;
                 }
                 case -3: {
-                    Toast.makeText(SplashScreen.this, "JSONException", Toast.LENGTH_LONG).show();
+                    //đăng nhập thất bại (JSONException) ->load login activity
+                    createAlertDialog("Đăng nhập", "JSONException", false).show();
                     Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
                     delay(intent);
                     break;
                 }
             }
         }
-    }
 
-    private void delay(final Intent intent) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startActivity(intent);
-                finish();
-            }
-        }, SPLASH_TIME_OUT);
+        private AlertDialog createAlertDialog(String title, String message, boolean cancelable) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreen.this);
+            builder.setTitle(title);
+            builder.setMessage(message);
+            builder.setCancelable(cancelable);
+            builder.setPositiveButton("OK", null);
+            return builder.create();
+        }
+
+        private void delay(final Intent intent) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(intent);
+                    finish();
+                }
+            }, SPLASH_TIME_OUT);
+        }
     }
 }

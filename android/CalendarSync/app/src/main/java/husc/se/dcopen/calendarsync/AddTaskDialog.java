@@ -3,11 +3,7 @@ package husc.se.dcopen.calendarsync;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.ContentValues;
 import android.content.Context;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -21,8 +17,8 @@ import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class AddTaskDialog extends Dialog {
 
@@ -40,10 +36,10 @@ public class AddTaskDialog extends Dialog {
     private SimpleDateFormat dateFormat;
     private SimpleDateFormat timeFormat;
     private SimpleDateFormat dateTimeFormat;
-    private String m_accountName;
+
     private DatabaseHelper db;
 
-    public AddTaskDialog(Context context, String accountName) {
+    public AddTaskDialog(Context context) {
         super(context);
         setCancelable(false);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -60,15 +56,17 @@ public class AddTaskDialog extends Dialog {
         btnSave = (Button)findViewById(R.id.btn_save);
         btnCancel = (Button)findViewById(R.id.btn_cancel);
 
-        m_accountName = accountName;
         db = new DatabaseHelper(getContext());
 
-        date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        date = cal.getTime();
         dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         timeFormat = new SimpleDateFormat("hh:mm aa");
         dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm aa");
         txtBeginDate.setText(dateFormat.format(date));
         txtBeginTime.setText(timeFormat.format(date));
+        cal.add(Calendar.HOUR_OF_DAY, 1);
+        date = cal.getTime();
         txtEndDate.setText(dateFormat.format(date));
         txtEndTime.setText(timeFormat.format(date));
 
@@ -86,25 +84,24 @@ public class AddTaskDialog extends Dialog {
                             " - " + txtEndTime.getText().toString());
 
                     Task task = new Task();
-                    task.setId(new java.util.Date().getTime() + "")
-                            .setTaskName(txtTaskName.getText().toString())
-                            .setPlace(txtPlace.getText().toString())
-                            .setTaskContent(txtTaskContent.getText().toString())
+                    task.setId(id)
+                            .setTaskName(taskName)
+                            .setPlace(place)
+                            .setTaskContent(taskContent)
                             .setType(0)
-                            .setAccountName(m_accountName)
-                            .setSync(0);
-                    task.setBeginTime(new java.sql.Date(btime.getTime()))
-                            .setEndTime(new java.sql.Date(etime.getTime()));
+                            .setSync(0)
+                            .setBeginTime(btime)
+                            .setEndTime(etime);
 
                     long row = db.insertTask(task);
 
                     if (row > 0) {
                         //add event to calendar
-                        insertToCalendar(id, taskName, taskContent, place, btime, etime);
-                        Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
+                        new CalendarSupport(getContext()).insertToCalendar(task);
+                        Toast.makeText(getContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
                         dismiss();
                     } else {
-                        Toast.makeText(getContext(), "Fail", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Thêm thất bại", Toast.LENGTH_SHORT).show();
                         txtTaskName.requestFocus();
                     }
                 } catch (ParseException e) {
@@ -191,37 +188,12 @@ public class AddTaskDialog extends Dialog {
         });
     }
 
-    public void insertToCalendar(String id, String taskName, String taskContent, String place,
-                                 java.util.Date btime, java.util.Date etime) {
-        final ContentValues event = new ContentValues();
-        event.put(CalendarContract.Events.CALENDAR_ID, 1);
-        event.put(CalendarContract.Events._ID, Long.parseLong(id));
-        event.put(CalendarContract.Events.TITLE, taskName);
-        event.put(CalendarContract.Events.DESCRIPTION, taskContent);
-        event.put(CalendarContract.Events.EVENT_LOCATION, place);
-        event.put(CalendarContract.Events.DTSTART, btime.getTime());
-        event.put(CalendarContract.Events.DTEND, etime.getTime());
-        event.put(CalendarContract.Events.ALL_DAY, 0);
-        event.put(CalendarContract.Events.HAS_ALARM, 1);
-        String timeZone = TimeZone.getDefault().getID();
-        event.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone);
-
-        Uri baseUri;
-        if (Build.VERSION.SDK_INT >= 8) {
-            baseUri = Uri.parse("content://com.android.calendar/events");
-        } else {
-            baseUri = Uri.parse("content://calendar/events");
-        }
-        getContext().getContentResolver().insert(baseUri, event);
-    }
-
     private DatePickerDialog.OnDateSetListener beginDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy");
             try {
-                Date date = timeFormat.parse(dayOfMonth + "/" + (monthOfYear+1) + "/" + year);
-                txtBeginDate.setText(timeFormat.format(date));
+                Date date = dateFormat.parse(dayOfMonth + "/" + (monthOfYear+1) + "/" + year);
+                txtBeginDate.setText(dateFormat.format(date));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

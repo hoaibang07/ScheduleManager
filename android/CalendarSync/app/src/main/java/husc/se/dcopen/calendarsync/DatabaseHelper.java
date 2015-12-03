@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
@@ -19,43 +18,38 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     //table Task
     public static final String TABLE_TASK = "Task";
     public static final String KEY_TASK_ID = "TaskID";
-    public static final String KEY_TASK_NAME = "TaskName";
-    public static final String KEY_BEGIN_TIME = "BeginTime";
-    public static final String KEY_END_TIME = "EndTime";
-    public static final String KEY_PLACE = "Place";
-    public static final String KEY_TASK_CONTENT = "TaskContent";
-    public static final String KEY_TYPE = "Type";
-    public static final String KEY_ACCOUNT_NAME = "AccountName";
-    public static final String KEY_SYNC = "Sync";
+    public static final String KEY_TASK_TYPE = "TaskType";
+    public static final String KEY_TASK_SYNC = "TaskSync";
     public static final String CREATE_TABLE_TASK = "CREATE TABLE IF NOT EXISTS " + TABLE_TASK + " ("+
             KEY_TASK_ID +" TEXT PRIMARY KEY, "+
-            KEY_TASK_NAME + " TEXT, "+
-            KEY_BEGIN_TIME + " TEXT, "+
-            KEY_END_TIME + " TEXT, "+
-            KEY_PLACE + " TEXT, " +
-            KEY_TASK_CONTENT + " TEXT, "+
-            KEY_TYPE + " INTEGER, "+
-            KEY_ACCOUNT_NAME + " TEXT, "+
-            KEY_SYNC + " INTEGER)";
+            KEY_TASK_TYPE + " INTEGER, "+
+            KEY_TASK_SYNC + " INTEGER)";
 
     //table History
     public static final String TABLE_HISTORY = "History";
-    public static final String KEY_HISTORY_ID = "HistoryID";
-    public static final String KEY_HISTORY_NGAY_DONG_BO = "NgayDongBo";
-    public static final String FK_TASK_ID = "TaskID";
+    public static final String KEY_HIS_ID = "HistoryID";
+    public static final String KEY_HIS_NGAY_DONG_BO = "NgayDongBo";
+    public static final String KEY_HIS_NAME = "HisName";
+    public static final String KEY_HIS_CONTENT = "HisContent";
+    public static final String KEY_HIS_TYPE = "HisType";
     public static final String CREATE_TABLE_HISTORY = "CREATE TABLE IF NOT EXISTS " + TABLE_HISTORY + " (" +
-            KEY_HISTORY_ID + " INTEGER AUTOINCREMENT, " +
-            KEY_HISTORY_NGAY_DONG_BO + " TEXT, " +
-            FK_TASK_ID + " TEXT)";
+            KEY_HIS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            KEY_HIS_NGAY_DONG_BO + " TEXT, " +
+            KEY_HIS_NAME + " TEXT, " +
+            KEY_HIS_CONTENT + " TEXT, " +
+            KEY_HIS_TYPE + " INTEGER)";
 
-    public static final String GET_HISTORY_SYNC_UP = "select "+KEY_HISTORY_NGAY_DONG_BO+", "+KEY_TASK_NAME+" " +
-            "from Task inner join History on Task.TaskID = History.TaskID " +
-            "where Type = '0' " +
-            "order by HistoryID desc";
-    public static final String GET_HISTORY_SYNC_DOWN = "select "+KEY_HISTORY_NGAY_DONG_BO+", "+KEY_TASK_NAME+" " +
-            "from Task inner join History on Task.TaskID = History.TaskID " +
-            "where Type = '1' " +
-            "order by HistoryID desc";
+    public static final String GET_HISTORY_SYNC_UP = "select "+KEY_HIS_NGAY_DONG_BO+", "+KEY_HIS_NAME+", " + KEY_HIS_CONTENT + " " +
+            "from " + TABLE_HISTORY + " " +
+            "where " + KEY_HIS_TYPE +"  = '0' " +
+            "order by " + KEY_HIS_ID + " desc";
+    public static final String GET_HISTORY_SYNC_DOWN = "select " +
+            KEY_HIS_NGAY_DONG_BO + ", " +
+            KEY_HIS_NAME + ", " +
+            KEY_HIS_CONTENT + " " +
+            "from " + TABLE_HISTORY + " " +
+            "where " + KEY_HIS_TYPE + " = '1' " +
+            "order by " + KEY_HIS_ID + " desc";
 
     private SQLiteDatabase db;
 
@@ -122,14 +116,34 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return index > 0;
     }
 
+    /**
+     *
+     * @param task
+     * @return 1 nếu như là lịch cá nhân, 0 nếu không phải, -1 nếu là lịch cá nhân chưa có trong csdl
+     */
+    public int checkPersonalTask(Task task) {
+        String sql = "select " +KEY_TASK_TYPE+ ", " +KEY_TASK_SYNC+" from " +TABLE_TASK+ " where " +KEY_TASK_ID+ " = '" +task.getId() + "'";
+        Cursor cursor = getAll(sql);
+        if(cursor.getCount() == 1) {
+            cursor.moveToNext();
+            task.setType(cursor.getInt(cursor.getColumnIndex(KEY_TASK_TYPE)))
+                    .setSync(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SYNC)));
+            close();
+
+            if(task.getType() == 0) return 1;
+            else return 0;
+        } else {
+            close();
+            task.setType(0); //lich ca nhan
+            task.setSync(0); //chua dong bo
+            return -1;
+        }
+    }
+
     //task db method
     public boolean checkExistTask(String taskID) {
         Cursor cursor = getAll("select TaskID from Task where TaskID = '" +taskID+"'");
-        if(cursor.getCount() == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return (cursor.getCount() == 1);
     }
 
     public ArrayList<Task> getListTask(String sql) {
@@ -141,6 +155,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             }
             cursor.close();
         }
+        close();
         return list;
     }
 
@@ -159,43 +174,16 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private Task cursorToTask(Cursor cursor) {
         Task task = new Task();
         task.setId(cursor.getString(cursor.getColumnIndex(KEY_TASK_ID)))
-                .setTaskName(cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)))
-                .setPlace(cursor.getString(cursor.getColumnIndex(KEY_PLACE)))
-                .setTaskContent(cursor.getString(cursor.getColumnIndex(KEY_TASK_CONTENT)))
-                .setType(cursor.getInt(cursor.getColumnIndex(KEY_TYPE)))
-                .setAccountName(cursor.getString(cursor.getColumnIndex(KEY_ACCOUNT_NAME)))
-                .setSync(cursor.getInt(cursor.getColumnIndex(KEY_SYNC)));
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm aa");
-        String strBeginTime = cursor.getString(cursor.getColumnIndex(KEY_BEGIN_TIME));
-        String strEndTime = cursor.getString(cursor.getColumnIndex(KEY_END_TIME));
-        try {
-            java.util.Date utilBeginTime = dateFormat.parse(strBeginTime);
-            java.util.Date utilEndTime = dateFormat.parse(strEndTime);
-
-            task.setBeginTime(new java.sql.Date(utilBeginTime.getTime()))
-                    .setEndTime(new java.sql.Date(utilEndTime.getTime()));
-        } catch (ParseException e) {
-            Log.e("#Date parse", e.getMessage());
-        }
+                .setType(cursor.getInt(cursor.getColumnIndex(KEY_TASK_TYPE)))
+                .setSync(cursor.getInt(cursor.getColumnIndex(KEY_TASK_SYNC)));
         return task;
     }
 
     private ContentValues taskToValues(Task task) {
         ContentValues values = new ContentValues();
         values.put(KEY_TASK_ID, task.getId());
-        values.put(KEY_TASK_NAME, task.getTaskName());
-        values.put(KEY_PLACE, task.getPlace());
-        values.put(KEY_TASK_CONTENT, task.getTaskContent());
-        values.put(KEY_TYPE, task.getType());
-        values.put(KEY_ACCOUNT_NAME, task.getAccountName());
-        values.put(KEY_SYNC, task.getSync());
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm aa");
-        String strBeginTime = dateFormat.format(task.getBeginTime());
-        String strEndTime = dateFormat.format(task.getEndTime());
-        values.put(KEY_BEGIN_TIME, strBeginTime);
-        values.put(KEY_END_TIME, strEndTime);
+        values.put(KEY_TASK_TYPE, task.getType());
+        values.put(KEY_TASK_SYNC, task.getSync());
 
         return values;
     }
@@ -213,11 +201,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return list;
     }
 
-    public long insertHistory(java.util.Date ngayDongBo, String taskName) {
+    public long insertHistory(java.util.Date ngayDongBo, String taskName, String taskContent, int taskType) {
         ContentValues values = new ContentValues();
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm aa");
-        values.put(KEY_HISTORY_NGAY_DONG_BO, dateTimeFormat.format(ngayDongBo));
-        values.put(KEY_TASK_NAME, taskName);
+        values.put(KEY_HIS_NGAY_DONG_BO, dateTimeFormat.format(ngayDongBo));
+        values.put(KEY_HIS_NAME, taskName);
+        values.put(KEY_HIS_CONTENT, taskContent);
+        values.put(KEY_HIS_TYPE, taskType);
         return insert(TABLE_HISTORY, values);
     }
 
@@ -226,9 +216,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     private String cursorToHistory(Cursor cursor) {
-        String str = String.format("%-25s%s",
-                cursor.getString(cursor.getColumnIndex(KEY_HISTORY_NGAY_DONG_BO)),
-                cursor.getString(cursor.getColumnIndex(KEY_TASK_NAME)));
-        return str;
+        return String.format("%-25s%s - %s",
+                cursor.getString(0),
+                cursor.getString(1),
+                cursor.getString(2));
     }
 }

@@ -6,12 +6,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -21,7 +19,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText txtUserName;
     private EditText txtPassword;
     private CheckBox ckbRemember;
-    private Button btnLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         txtUserName = (EditText)findViewById(R.id.txt_username);
         txtPassword = (EditText)findViewById(R.id.txt_password);
         ckbRemember = (CheckBox)findViewById(R.id.ckb_remember);
-        btnLogin = (Button)findViewById(R.id.btn_login);
+        final Button btnLogin = (Button)findViewById(R.id.btn_login);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
 
             switch (integer) {
                 case 1: {
+                    //Đăng nhập thành công
                     final Settings settings = new Settings(LoginActivity.this);
                     settings.putRemember(ckbRemember.isChecked());
                     settings.putUserName(userName);
@@ -77,19 +75,21 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 }
                 case 0: {
-                    Toast.makeText(LoginActivity.this, "Dang nhap that bai", Toast.LENGTH_LONG).show();
+                    //Đăng nhập thất bại
+                    createAlertDialog("Đăng nhập", "Sai tên đăng nhập hoặc mật khẩu", false).show();
                     break;
                 }
                 case -1: {
-                    Toast.makeText(LoginActivity.this, "Trong", Toast.LENGTH_LONG).show();
+                    //Thông tin đăng nhập bị để trống
+                    createAlertDialog("Đăng nhập", "Không được để trống thông tin đăng nhập", false).show();
                     break;
                 }
                 case -2: {
-                    Toast.makeText(LoginActivity.this, "IOException", Toast.LENGTH_LONG).show();
+                    createAlertDialog("Đăng nhập", "IOException", false).show();
                     break;
                 }
                 case -3: {
-                    Toast.makeText(LoginActivity.this, "JSONException", Toast.LENGTH_LONG).show();
+                    createAlertDialog("Đăng nhập", "JSONException", false).show();
                     break;
                 }
             }
@@ -100,7 +100,6 @@ public class LoginActivity extends AppCompatActivity {
             if(userName.equals("") || password.equals("")) result = -1;
             try {
                 if(JSONParser.checkLogin(userName, password)) result = 1;
-                Log.e("Login", result + "");
             } catch (IOException e) {
                 result = -2;
             } catch (JSONException e) {
@@ -108,20 +107,28 @@ public class LoginActivity extends AppCompatActivity {
             }
             return result;
         }
+
+        private AlertDialog createAlertDialog(String title, String message, boolean cancelable) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+            builder.setTitle(title);
+            builder.setMessage(message);
+            builder.setCancelable(cancelable);
+            builder.setPositiveButton("OK", null);
+            return builder.create();
+        }
     }
 
     @Override
     public void onBackPressed() {
-        AlertDialog exitDialog = createAlertDialog();
-        exitDialog.show();
+        createExitDialog().show();
     }
 
-    private AlertDialog createAlertDialog() {
+    private AlertDialog createExitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure you want to exit");
+        builder.setTitle("Thoát");
+        builder.setMessage("Bạn có thực sự muốn thoát?");
         builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 moveTaskToBack(true);
@@ -129,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
                 System.exit(0);
             }
         });
-        builder.setNegativeButton("No", null);
+        builder.setNegativeButton("Không", null);
 
         return builder.create();
     }

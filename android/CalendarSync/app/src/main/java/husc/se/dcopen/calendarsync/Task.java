@@ -3,8 +3,8 @@ package husc.se.dcopen.calendarsync;
 public class Task {
     private String id;
     private String taskName;
-    private java.sql.Date beginTime;
-    private java.sql.Date endTime;
+    private java.util.Date beginTime;
+    private java.util.Date endTime;
     private String place;
     private String taskContent;
     private int type;
@@ -13,7 +13,7 @@ public class Task {
 
     public Task() {}
 
-    public Task(String id, String taskName, java.sql.Date beginTime,java.sql.Date endTime,
+    public Task(String id, String taskName, java.util.Date beginTime,java.util.Date endTime,
                 String place, String taskContent, String accountName, int type, int sync) {
         this.id = id;
         this.taskName = taskName;
@@ -44,20 +44,20 @@ public class Task {
         return this;
     }
 
-    public java.sql.Date getBeginTime() {
+    public java.util.Date getBeginTime() {
         return beginTime;
     }
 
-    public Task setBeginTime(java.sql.Date beginTime) {
+    public Task setBeginTime(java.util.Date beginTime) {
         this.beginTime = beginTime;
         return this;
     }
 
-    public java.sql.Date getEndTime() {
+    public java.util.Date getEndTime() {
         return endTime;
     }
 
-    public Task setEndTime(java.sql.Date endTime) {
+    public Task setEndTime(java.util.Date endTime) {
         this.endTime = endTime;
         return this;
     }

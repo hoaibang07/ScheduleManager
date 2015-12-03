@@ -1,5 +1,7 @@
 package husc.se.dcopen.calendarsync;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,12 +13,45 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimeZone;
 
 public class JSONParser {
 
     public static final String ADDRESS = "http://nckh.somee.com/Server.svc/rest/";
 
     private JSONParser() {}
+
+    private static Task convertJSONtoTask(JSONObject jsonObject) {
+        try {
+            String accountName = jsonObject.getString("AccountName");
+            java.util.Date beginDate = convertJSONDateToDate(jsonObject.getString("BeginTime"));
+            java.util.Date endDate = convertJSONDateToDate(jsonObject.getString("EndTime"));
+            String id = jsonObject.getLong("ID") + "";
+            String place = jsonObject.getString("Place");
+            String taskContent = jsonObject.getString("TaskContent");
+            String taskName = jsonObject.getString("TaskName");
+            int type = jsonObject.getInt("Type");
+
+            Log.e("Convert JSON to Task", type + "");
+
+            return new Task(id, taskName, beginDate, endDate, place, taskContent, accountName, type, 1);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static java.util.Date convertJSONDateToDate(String jsonDate) {
+        int idx1 = jsonDate.indexOf("(");
+        int idx2 = jsonDate.indexOf(")") - 5;
+        String s = jsonDate.substring(idx1+1, idx2);
+        long l = Long.valueOf(s);
+
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(jsonDate.substring(idx2, idx2 + 5)));
+        cal.setTimeInMillis(l);
+        return cal.getTime();
+    }
 
     public static ArrayList<Task> syncDown(String userName) throws IOException, JSONException {
         ArrayList<Task> listTask = new ArrayList<>();
@@ -52,12 +87,8 @@ public class JSONParser {
             sb.append(line);
         }
 
-        if(urlConnection != null) {
-            urlConnection.disconnect();
-        }
-        if(reader != null) {
-            reader.close();
-        }
+        urlConnection.disconnect();
+        reader.close();
 
         return sb.toString();
 //        HttpClient httpClient=new DefaultHttpClient();
@@ -98,23 +129,5 @@ public class JSONParser {
 
     public static void syncUp(String userName, Task task) {
 
-    }
-
-    private static Task convertJSONtoTask(JSONObject jsonObject) {
-        Task task = null;
-        try {
-            String id = jsonObject.getString("ID");
-            String taskName = jsonObject.getString("TaskName");
-            String taskContent = jsonObject.getString("TaskContent");
-            java.sql.Date beginDate = new java.sql.Date(jsonObject.getLong("BeginTime"));
-            java.sql.Date endDate = new java.sql.Date(jsonObject.getLong("EndTime"));
-            int type = jsonObject.getInt("Type");
-            String accountName = jsonObject.getString("AccountName");
-            String place = jsonObject.getString("Place");
-            task = new Task(id, taskName, beginDate, endDate, place, taskContent, accountName, type, 1);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return task;
     }
 }

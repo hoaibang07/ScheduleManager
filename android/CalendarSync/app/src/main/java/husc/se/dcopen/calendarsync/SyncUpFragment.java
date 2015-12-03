@@ -1,10 +1,7 @@
 package husc.se.dcopen.calendarsync;
 
 import android.app.Fragment;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,11 +22,12 @@ import java.util.List;
 public class SyncUpFragment extends Fragment {
     private CheckBox ckbSelectAll;
     private String accountName;
+    private ListView listView;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sync_up, container, false);
-        final ListView listView = (ListView)view.findViewById(R.id.list_task);
+        listView = (ListView)view.findViewById(R.id.list_task);
 
         ckbSelectAll = (CheckBox)view.findViewById(R.id.ckb_select_all);
         ckbSelectAll.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -58,34 +56,36 @@ public class SyncUpFragment extends Fragment {
         Settings settings = new Settings(getActivity());
         int soNgaySyncUp = settings.getNumberDateSyncUp();
         accountName = settings.getUserName();
+
         Calendar cal = Calendar.getInstance();
         cal.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
         java.util.Date date1 = cal.getTime();
         cal.add(Calendar.DAY_OF_YEAR, soNgaySyncUp);
         java.util.Date date2 = cal.getTime();
 
-        List<Task> tasks = db.getListTask("select * from Task where Type = 0 and AccountName = '" +accountName+"'");
-
-        List<Task> taskss = new ArrayList<>();
+        List<Task> listTask;
         if(soNgaySyncUp > 0) {
-            for(Task item : tasks) {
-                if(item.getBeginTime().getTime() >= date1.getTime() && item.getBeginTime().getTime() <= date2.getTime()){
-                    taskss.add(item);
-                }
-            }
+            listTask = new CalendarSupport(getActivity()).getEventFromCalendar(date1, date2);
         } else {
-            for(Task item : tasks) {
-                if(item.getBeginTime().getTime() >= date2.getTime() && item.getBeginTime().getTime() <= date1.getTime()){
-                    taskss.add(item);
-                }
-            }
+            listTask = new CalendarSupport(getActivity()).getEventFromCalendar(date2, date1);
         }
 
-        ArrayList<TaskItem> listTask = new ArrayList<>();
-        for(Task tsk : taskss) {
-            listTask.add(new TaskItem(tsk, false));
+        ArrayList<TaskItem> listTaskItem = new ArrayList<>();
+        int check;
+        for(int i = 0; i < listTask.size(); i++) {
+            Task tsk = listTask.get(i);
+            check = db.checkPersonalTask(tsk);
+            Log.e(tsk.getTaskName(), check + "");
+            if(check == 1) {
+                tsk.setAccountName(accountName);
+                listTaskItem.add(new TaskItem(tsk, false));
+            } else if(check == -1) {
+                tsk.setAccountName(accountName);
+                listTaskItem.add(new TaskItem(tsk, false));
+                db.insertTask(tsk);
+            }
         }
-        TaskArrayAdapter taskArrayAdapter = new TaskArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, listTask);
+        TaskArrayAdapter taskArrayAdapter = new TaskArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, listTaskItem);
         listView.setAdapter(taskArrayAdapter);
 
         return view;
@@ -130,7 +130,7 @@ public class SyncUpFragment extends Fragment {
             txtTaskPlace.setText(taskItem.getTask().getPlace());
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             txtTaskBeginTime.setText(dateFormat.format(taskItem.getTask().getBeginTime()));
-            txtTaskEndTime.setText(dateFormat.format(taskItem.getTask().getEndTime()));
+//            txtTaskEndTime.setText(dateFormat.format(taskItem.getTask().getEndTime()));
             ckbChecked.setChecked(taskItem.isChecked());
 
             if(taskItem.getTask().getSync() == 1) {

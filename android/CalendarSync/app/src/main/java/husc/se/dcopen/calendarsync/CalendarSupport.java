@@ -4,15 +4,62 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
+import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.TimeZone;
 
 public class CalendarSupport extends ContextWrapper{
 
+    public static final String[] FIELDS = {
+            CalendarContract.Events._ID,
+            CalendarContract.Events.TITLE,
+            CalendarContract.Events.DESCRIPTION,
+            CalendarContract.Events.EVENT_LOCATION,
+            CalendarContract.Events.DTSTART,
+            CalendarContract.Events.DTEND };
+
     public CalendarSupport(Context base) {
         super(base);
+    }
+
+    public ArrayList<Task> getEventFromCalendar(java.util.Date btime, java.util.Date etime) {
+        ArrayList<Task> listTask = new ArrayList<>();
+        Uri uri = getCalendarUriEvent();
+        Cursor cursor = getContentResolver().query(uri, FIELDS, null, null, null);
+
+        while(cursor.moveToNext()) {
+            java.util.Date dtstart = new java.util.Date(Long.parseLong(cursor.getString(4)));
+            java.util.Date dtend;
+            if(cursor.getString(5) != null) {
+                dtend = new java.util.Date(Long.parseLong(cursor.getString(5)));
+            } else {
+                dtend = dtstart;
+            }
+            if(!(dtend.getTime() < btime.getTime() || dtstart.getTime() > etime.getTime())) {
+                String id = cursor.getString(0);
+
+                Log.e("Calendar Support", id + "");
+
+                String title = cursor.getString(1);
+                String descrip = cursor.getString(2);
+                String location = cursor.getString(3);
+
+                Task task = new Task();
+                task.setId(id);
+                task.setTaskName(title);
+                task.setTaskContent(descrip);
+                task.setPlace(location);
+                task.setBeginTime(dtstart);
+                task.setEndTime(dtend);
+
+                listTask.add(task);
+            }
+        }
+        return listTask;
     }
 
     public void insertToCalendar(Task task) {
@@ -29,7 +76,7 @@ public class CalendarSupport extends ContextWrapper{
         String timeZone = TimeZone.getDefault().getID();
         event.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone);
 
-        Uri baseUri = getCalendarUriBase();
+        Uri baseUri = getCalendarUriEvent();
         getContentResolver().insert(baseUri, event);
     }
 
@@ -46,17 +93,17 @@ public class CalendarSupport extends ContextWrapper{
         String timeZone = TimeZone.getDefault().getID();
         event.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone);
 
-        Uri baseUri = getCalendarUriBase();
+        Uri baseUri = getCalendarUriEvent();
         Uri updateUri = ContentUris.withAppendedId(baseUri, Long.parseLong(task.getId()));
         return getContentResolver().update(updateUri, event, null, null);
     }
 
     public long deleteTaskInCalendar(long taskID) {
-        Uri eventUri = ContentUris.withAppendedId(getCalendarUriBase(), taskID);
+        Uri eventUri = ContentUris.withAppendedId(getCalendarUriEvent(), taskID);
         return getContentResolver().delete(eventUri, null, null);
     }
 
-    private Uri getCalendarUriBase() {
+    private Uri getCalendarUriEvent() {
         Uri eventUri;
         if (android.os.Build.VERSION.SDK_INT <= 7) {
             eventUri = Uri.parse("content://calendar/events");

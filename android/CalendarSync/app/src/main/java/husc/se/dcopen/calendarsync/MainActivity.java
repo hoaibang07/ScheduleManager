@@ -8,14 +8,15 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.CalendarContract;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getBundleExtra("Account");
         m_accountName = bundle.getString("UserName");
+        boolean b = deleteDatabase(DatabaseHelper.DATABASE_NAME);
+//        if(b) Log.e("Main Activity", "Da xoa data base");
         db = new DatabaseHelper(this);
     }
 
@@ -92,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(navMenu);
             }
         } else if (id == R.id.action_add) {
-                AddTaskDialog dialog = new AddTaskDialog(MainActivity.this, m_accountName);
+                AddTaskDialog dialog = new AddTaskDialog(MainActivity.this);
                 dialog.show();
         } else if(id == R.id.action_sync_up) {
             //sync up
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
         mniAdd.setVisible(true);
         mniSyncUp.setVisible(false);
-        actionBar.setSubtitle("Home");
+        actionBar.setSubtitle("Trang chủ");
         drawerLayout.closeDrawer(navMenu);
     }
 
@@ -124,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
         mniAdd.setVisible(false);
         mniSyncUp.setVisible(true);
-        actionBar.setSubtitle("Choose task for sync up");
+        actionBar.setSubtitle("Chọn sự kiện cần đồng bộ lên");
         drawerLayout.closeDrawer(navMenu);
     }
 
@@ -175,8 +178,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void btnLogoutOnClick(View v) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure you want to logout");
+        builder.setTitle("Đăng xuất");
+        builder.setMessage("Bạn có chắc chắn muốn đăng xuất");
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
@@ -214,14 +217,14 @@ public class MainActivity extends AppCompatActivity {
         return builder.create();
     }
 
-    private class SyncDownTask extends AsyncTask<String, Long, ArrayList<Task>> {
+    private class SyncDownTask extends AsyncTask<String, Long, Void> {
         private ProgressDialog dlg;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             dlg = new ProgressDialog(MainActivity.this);
-            dlg.setMessage("Sync down...");
+            dlg.setMessage("Đang dồng bộ xuống...");
             dlg.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             dlg.setIndeterminate(true);
             dlg.setProgress(0);
@@ -229,30 +232,34 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<Task> doInBackground(String... params) { //params : userName
-            ArrayList<Task> listTask = new ArrayList<>();
+        protected Void doInBackground(String... params) { //params : userName
+            String userName = params[0];
+            ArrayList<Task> listTask = null;
             try {
-                listTask = JSONParser.syncDown(params[0]);
+                listTask = JSONParser.syncDown(userName);
 
-                //them vao database...
                 CalendarSupport calendarSupport = new CalendarSupport(MainActivity.this);
-                for(Task task : listTask) {
+                for(int i = 0; i < listTask.size(); i++) {
+                    Task task = listTask.get(i);
                     if(db.checkExistTask(task.getId())) {
                         db.updateTask(task);
                         calendarSupport.editToCalendar(task);
-                        db.insertHistory(new java.util.Date(), task.getId());
                     } else {
-                        db.insertTask(task);
-                        calendarSupport.insertToCalendar(task);
-                        db.insertHistory(new java.util.Date(), task.getId());
+                        long row = db.insertTask(task);
+                        Log.e("INSERT TASK", row + "");
+                        if(row > 0) {
+                            calendarSupport.insertToCalendar(task);
+                        }
                     }
+                    db.insertHistory(new java.util.Date(), task.getTaskName(),
+                            task.getTaskContent(), task.getType());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return  listTask;
+            return null;
         }
 
         @Override
@@ -261,8 +268,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Task> tasks) {
-            super.onPostExecute(tasks);
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
             dlg.dismiss();
             Toast.makeText(MainActivity.this, "Update xong roi", Toast.LENGTH_SHORT).show();
         }
