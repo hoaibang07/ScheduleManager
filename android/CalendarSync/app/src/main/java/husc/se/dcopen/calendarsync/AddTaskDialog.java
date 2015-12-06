@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -29,8 +30,6 @@ public class AddTaskDialog extends Dialog {
     private TextView txtEndTime;
     private EditText txtPlace;
     private EditText txtTaskContent;
-    private Button btnSave;
-    private Button btnCancel;
 
     private java.util.Date date;
     private SimpleDateFormat dateFormat;
@@ -53,8 +52,8 @@ public class AddTaskDialog extends Dialog {
         txtEndTime = (TextView)findViewById(R.id.txt_end_time);
         txtPlace = (EditText)findViewById(R.id.txt_place);
         txtTaskContent = (EditText)findViewById(R.id.txt_task_content);
-        btnSave = (Button)findViewById(R.id.btn_save);
-        btnCancel = (Button)findViewById(R.id.btn_cancel);
+        final Button btnSave = (Button)findViewById(R.id.btn_save);
+        final Button btnCancel = (Button)findViewById(R.id.btn_cancel);
 
         db = new DatabaseHelper(getContext());
 
@@ -99,13 +98,19 @@ public class AddTaskDialog extends Dialog {
                         //add event to calendar
                         new CalendarSupport(getContext()).insertToCalendar(task);
                         Toast.makeText(getContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
+
+
+                        Intent intent = new Intent("AddTask");
+                        intent.putExtra("add", true);
+                        getContext().sendBroadcast(intent);
+
                         dismiss();
                     } else {
                         Toast.makeText(getContext(), "Thêm thất bại", Toast.LENGTH_SHORT).show();
                         txtTaskName.requestFocus();
                     }
                 } catch (ParseException e) {
-                    Log.e("Add task: ", e.getMessage());
+                    Log.e("AddTaskDialog: ", e.getMessage());
                 }
             }
         });
@@ -195,7 +200,7 @@ public class AddTaskDialog extends Dialog {
                 Date date = dateFormat.parse(dayOfMonth + "/" + (monthOfYear+1) + "/" + year);
                 txtBeginDate.setText(dateFormat.format(date));
             } catch (ParseException e) {
-                e.printStackTrace();
+                Log.e("BeginDateListener", e.getMessage());
             }
         }
     };
@@ -203,12 +208,11 @@ public class AddTaskDialog extends Dialog {
     private DatePickerDialog.OnDateSetListener endDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            SimpleDateFormat timeFormat = new SimpleDateFormat("dd/MM/yyyy");
             try {
-                Date date = timeFormat.parse(dayOfMonth + "/" + (monthOfYear+1) + "/" + year);
-                txtEndDate.setText(timeFormat.format(date));
+                Date date = dateFormat.parse(dayOfMonth + "/" + (monthOfYear+1) + "/" + year);
+                txtEndDate.setText(dateFormat.format(date));
             } catch (ParseException e) {
-                e.printStackTrace();
+                Log.e("EndDateListener", e.getMessage());
             }
         }
     };
@@ -223,7 +227,7 @@ public class AddTaskDialog extends Dialog {
                 java.util.Date date = timeFormat1.parse(hourOfDay + ":" + minute);
                 txtBeginTime.setText(timeFormat2.format(date));
             } catch (ParseException e) {
-                e.printStackTrace();
+                Log.e("BeginTimeListener", e.getMessage());
             }
         }
     };
@@ -238,7 +242,7 @@ public class AddTaskDialog extends Dialog {
                 java.util.Date date = timeFormat1.parse(hourOfDay + ":" + minute);
                 txtEndTime.setText(timeFormat2.format(date));
             } catch (ParseException e) {
-                e.printStackTrace();
+                Log.e("EndTimeListener", e.getMessage());
             }
         }
     };

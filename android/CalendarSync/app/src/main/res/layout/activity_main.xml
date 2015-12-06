@@ -31,7 +31,7 @@
                 android:padding="6dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_home_blue"
+                android:drawableLeft="@drawable/ic_home"
                 android:drawablePadding="30dp"
                 android:textSize="16sp"
                 android:textAllCaps="false"

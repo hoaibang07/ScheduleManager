@@ -1,7 +1,5 @@
 package husc.se.dcopen.calendarsync;
 
-import android.app.Dialog;
-import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.DialogInterface;
@@ -35,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout navMenu;
     private MenuItem mniAdd;
     private MenuItem mniSyncUp;
+    private SyncUpFragment syncUpFragment;
 
     private String m_accountName;
     private DatabaseHelper db;
@@ -45,13 +44,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setFunctionMenu();
         actionBar.setTitle("Calendar Sync");
-        actionBar.setSubtitle("Home");
+        actionBar.setSubtitle("Trang chủ");
 
         Bundle bundle = getIntent().getBundleExtra("Account");
         m_accountName = bundle.getString("UserName");
-        boolean b = deleteDatabase(DatabaseHelper.DATABASE_NAME);
+//        boolean b = deleteDatabase(DatabaseHelper.DATABASE_NAME);
 //        if(b) Log.e("Main Activity", "Da xoa data base");
+
         db = new DatabaseHelper(this);
+
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        HomeFragment fragment = new HomeFragment();
+        fragmentTransaction.replace(R.id.fragment_holder, fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     private void setFunctionMenu() {
@@ -98,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
                 AddTaskDialog dialog = new AddTaskDialog(MainActivity.this);
                 dialog.show();
         } else if(id == R.id.action_sync_up) {
-            //sync up
+            Intent intent = new Intent("SyncUp");
+            sendBroadcast(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -106,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     public void btnHomeOnClick(View view) {
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment fragment = new Fragment();
+        HomeFragment fragment = new HomeFragment();
         fragmentTransaction.replace(R.id.fragment_holder, fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
@@ -120,8 +128,11 @@ public class MainActivity extends AppCompatActivity {
     public void btnSyncUpOnClick(View v) {
         android.app.FragmentManager fragmentManager = getFragmentManager();
         android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        SyncUpFragment fragment = new SyncUpFragment();
-        fragmentTransaction.replace(R.id.fragment_holder, fragment);
+        if(syncUpFragment != null) {
+            syncUpFragment.onDestroy();
+        }
+        syncUpFragment = new SyncUpFragment();
+        fragmentTransaction.replace(R.id.fragment_holder, syncUpFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
@@ -147,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
         mniAdd.setVisible(false);
         mniSyncUp.setVisible(false);
-        actionBar.setSubtitle("Sync history");
+        actionBar.setSubtitle("Lịch sử đồng bộ");
         drawerLayout.closeDrawer(navMenu);
     }
 
@@ -165,14 +176,18 @@ public class MainActivity extends AppCompatActivity {
     public void btnSettingOnClick(View v) {
         SettingDialog settingDialog = new SettingDialog();
         FragmentManager fm = getSupportFragmentManager();
-        settingDialog.show(fm, "Settings");
+        settingDialog.show(fm, "Cài đặt");
         drawerLayout.closeDrawer(navMenu);
     }
 
     public void btnAboutOnClick(View v) {
-        Dialog dialog = new Dialog(this);
-        dialog.setTitle("About");
-        dialog.show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Thông tin");
+
+        builder.setMessage("- Tác giả: Nguyễn Dũng và cộng sự\n- Năm hoàn thành: 2015\n- Liên hệ: nguyendung622@gmail.com");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Đóng", null);
+        builder.create().show();
         drawerLayout.closeDrawer(navMenu);
     }
 
@@ -181,14 +196,14 @@ public class MainActivity extends AppCompatActivity {
         builder.setTitle("Đăng xuất");
         builder.setMessage("Bạn có chắc chắn muốn đăng xuất");
         builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
         });
-        builder.setNegativeButton("No", null);
+        builder.setNegativeButton("Không", null);
         builder.create().show();
         drawerLayout.closeDrawer(navMenu);
     }
@@ -201,10 +216,11 @@ public class MainActivity extends AppCompatActivity {
 
     private AlertDialog createAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Confirm");
-        builder.setMessage("Are you sure you want to exit");
+        builder.setTitle("Thoát");
+        builder.setIcon(android.R.id.icon);
+        builder.setMessage("Bạn có thực sự muốn thoát?");
         builder.setCancelable(false);
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 moveTaskToBack(true);
@@ -212,32 +228,34 @@ public class MainActivity extends AppCompatActivity {
                 System.exit(0);
             }
         });
-        builder.setNegativeButton("No", null);
+        builder.setNegativeButton("Không", null);
 
         return builder.create();
     }
 
-    private class SyncDownTask extends AsyncTask<String, Long, Void> {
+    private class SyncDownTask extends AsyncTask<String, Integer, ArrayList<History>> {
         private ProgressDialog dlg;
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
             dlg = new ProgressDialog(MainActivity.this);
-            dlg.setMessage("Đang dồng bộ xuống...");
+            dlg.setMessage("Đang đồng bộ dữ liệu xuống...");
             dlg.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            dlg.setIndeterminate(true);
+            dlg.setIndeterminate(false);
+            dlg.setMax(100);
             dlg.setProgress(0);
             dlg.show();
         }
 
         @Override
-        protected Void doInBackground(String... params) { //params : userName
+        protected ArrayList<History> doInBackground(String... params) { //params : userName
             String userName = params[0];
             ArrayList<Task> listTask = null;
+            ArrayList<History> listHistory = new ArrayList<History>();
             try {
                 listTask = JSONParser.syncDown(userName);
-
+                publishProgress(30);
                 CalendarSupport calendarSupport = new CalendarSupport(MainActivity.this);
                 for(int i = 0; i < listTask.size(); i++) {
                     Task task = listTask.get(i);
@@ -246,32 +264,57 @@ public class MainActivity extends AppCompatActivity {
                         calendarSupport.editToCalendar(task);
                     } else {
                         long row = db.insertTask(task);
-                        Log.e("INSERT TASK", row + "");
                         if(row > 0) {
                             calendarSupport.insertToCalendar(task);
                         }
                     }
-                    db.insertHistory(new java.util.Date(), task.getTaskName(),
-                            task.getTaskContent(), task.getType());
+
+                    java.util.Date date = new java.util.Date();
+                    History history = new History();
+                    history.setNgayDongBo(date);
+                    history.setId("");
+                    history.setHisBTime(task.getBeginTime());
+                    history.setHisETime(task.getEndTime());
+                    history.setHisContent(task.getTaskContent());
+                    history.setHisName(task.getTaskName());
+                    history.setHisPlace(task.getPlace());
+                    history.setHisType(task.getType());
+                    listHistory.add(history);
+                    db.insertHistory(history);
+
+                    publishProgress(i* 100/listTask.size());
+                    if(isCancelled()) break;
                 }
+                publishProgress(100);
+                return listHistory;
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e("IOException ", e.getMessage());
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("JSONException ", e.getMessage());
             }
             return null;
         }
 
         @Override
-        protected void onProgressUpdate(Long... values) {
+        protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
+            dlg.setProgress(values[0]);
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(ArrayList<History> listHistory) {
             dlg.dismiss();
-            Toast.makeText(MainActivity.this, "Update xong roi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Đã đồng bộ xong", Toast.LENGTH_SHORT).show();
+
+            ListSend.listHistories = listHistory;
+
+            android.app.FragmentManager fragmentManager = getFragmentManager();
+            android.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            NewHisFragment fragment = new NewHisFragment();
+
+            fragmentTransaction.replace(R.id.fragment_holder, fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
         }
     }
 }

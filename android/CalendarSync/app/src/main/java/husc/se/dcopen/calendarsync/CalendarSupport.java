@@ -7,7 +7,6 @@ import android.content.ContextWrapper;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.TimeZone;
@@ -41,8 +40,6 @@ public class CalendarSupport extends ContextWrapper{
             }
             if(!(dtend.getTime() < btime.getTime() || dtstart.getTime() > etime.getTime())) {
                 String id = cursor.getString(0);
-
-                Log.e("Calendar Support", id + "");
 
                 String title = cursor.getString(1);
                 String descrip = cursor.getString(2);

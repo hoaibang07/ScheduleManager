@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:background="@drawable/button_transparent_no_border"
+    android:id="@+id/linear_his">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="10dp"
+        android:background="@drawable/button_transp_default_no_border">
+        <TextView
+            android:id="@+id/tv_his_time"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="12/11/2015 12:20 AM" />
+        <TextView
+            android:id="@+id/tv_his_ten"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="cong viec"
+            android:textSize="15sp"/>
+    </LinearLayout>
+
+
+</LinearLayout>

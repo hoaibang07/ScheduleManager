@@ -4,6 +4,12 @@
     tools:context=".SplashScreen"
     android:background="@color/dark_green"
     android:orientation="vertical">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:src="@drawable/logo"
+        android:layout_marginTop="15dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -11,8 +17,7 @@
         android:textColor="@color/white"
         android:textSize="40sp"
         android:layout_gravity="center_horizontal"
-        android:paddingBottom="120dp"
-        android:paddingTop="50dp"/>
+        android:paddingBottom="70dp" />
     <WebView
         android:id="@+id/web_view"
         android:layout_width="130dp"
@@ -27,4 +32,17 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white" />
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:gravity="end">
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="(C)Copyright 2015 - Nguyen Dung"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            />
+    </RelativeLayout>
+
 </LinearLayout>

@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/light_green"
+        android:background="@color/dark_green"
         android:layout_marginBottom="20dp">
         <TextView
             android:layout_width="fill_parent"
@@ -167,7 +167,7 @@
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:text="@string/sync_task"/>
+                android:text="@string/nosync_task"/>
             <husc.se.dcopen.calendarsync.LineColorPicker
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/picker_nosync"

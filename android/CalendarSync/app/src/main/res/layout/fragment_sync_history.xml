@@ -29,10 +29,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/tv_his_sync_up"
+                    <ListView
+                        android:id="@+id/lv_his_sync_up"
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent" />
+                        android:layout_height="fill_parent"
+                        android:padding="10dp">
+                    </ListView>
                 </LinearLayout>
 
                 <LinearLayout
@@ -40,10 +42,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/tv_his_sync_down"
+                    <ListView
+                        android:id="@+id/lv_his_sync_down"
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent" />
+                        android:layout_height="fill_parent"
+                        android:padding="10dp">
+
+                    </ListView>
                 </LinearLayout>
 
             </FrameLayout>

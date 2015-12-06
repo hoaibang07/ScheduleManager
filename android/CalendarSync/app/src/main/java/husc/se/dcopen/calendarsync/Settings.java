@@ -5,10 +5,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.preference.PreferenceManager;
 
-import java.io.Serializable;
-
 public class Settings {
-    public static final String MY_PREFS = "SettingPrefs";
+//    public static final String MY_PREFS = "SettingPrefs";
     public static final String USER_NAME = "UserName";
     public static final String PASSWORD = "Password";
     public static final String REMEMBERR = "Remember";

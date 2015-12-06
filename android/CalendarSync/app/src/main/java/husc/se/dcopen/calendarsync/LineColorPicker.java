@@ -400,7 +400,6 @@ public class LineColorPicker extends View {
         for (int i = 0; i < colors.length; i++) {
             if (colors[i] == c)
                 return true;
-
         }
 
         return false;

@@ -53,7 +53,7 @@ public class CustomSeekBar extends SeekBar {
                         getHeight() / 2 + (seekbar_height/2));
             }
 
-            paint.setColor(Color.GREEN);
+            paint.setColor(Color.BLUE);
             canvas.drawRect(rect, paint);
         }
 
@@ -63,7 +63,7 @@ public class CustomSeekBar extends SeekBar {
                     getWidth() / 2,
                     getHeight() / 2 + (seekbar_height/2));
 
-            paint.setColor(Color.GREEN);
+            paint.setColor(Color.BLUE);
             canvas.drawRect(rect, paint);
         }
 

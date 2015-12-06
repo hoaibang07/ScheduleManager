@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.webkit.WebView;
 import android.widget.TextView;
 
@@ -17,7 +16,7 @@ import java.io.IOException;
 
 public class SplashScreen extends AppCompatActivity {
 
-    public static final int SPLASH_TIME_OUT = 8000;
+    public static final int SPLASH_TIME_OUT = 4000;
     private WebView webView;
     private TextView tvKhoiDong;
 
@@ -112,14 +111,14 @@ public class SplashScreen extends AppCompatActivity {
                 }
                 case -2: {
                     //đăng nhập thất bại (IOException) ->load login activity
-                    createAlertDialog("Đăng nhập", "IOException", false).show();
+                    createAlertDialog("Đăng nhập", "Kết nối bị lỗi", false).show();
                     Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
                     delay(intent);
                     break;
                 }
                 case -3: {
                     //đăng nhập thất bại (JSONException) ->load login activity
-                    createAlertDialog("Đăng nhập", "JSONException", false).show();
+                    createAlertDialog("Đăng nhập", "Lỗi hệ thống", false).show();
                     Intent intent = new Intent(SplashScreen.this, LoginActivity.class);
                     delay(intent);
                     break;
@@ -132,7 +131,7 @@ public class SplashScreen extends AppCompatActivity {
             builder.setTitle(title);
             builder.setMessage(message);
             builder.setCancelable(cancelable);
-            builder.setPositiveButton("OK", null);
+            builder.setPositiveButton("Đóng", null);
             return builder.create();
         }
 

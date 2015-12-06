@@ -8,12 +8,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String DATABASE_NAME = "MyPlan.db";
-    public static final int DATA_VERSION = 1;
+    public static final int DATA_VERSION = 3;
 
     //table Task
     public static final String TABLE_TASK = "Task";
@@ -31,24 +32,41 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String KEY_HIS_NGAY_DONG_BO = "NgayDongBo";
     public static final String KEY_HIS_NAME = "HisName";
     public static final String KEY_HIS_CONTENT = "HisContent";
+    public static final String KEY_HIS_BEGIN_TIME = "HisBTime";
+    public static final String KEY_HIS_END_TIME = "HisETime";
+    public static final String KEY_HIS_PLACE = "HisPlace";
     public static final String KEY_HIS_TYPE = "HisType";
     public static final String CREATE_TABLE_HISTORY = "CREATE TABLE IF NOT EXISTS " + TABLE_HISTORY + " (" +
             KEY_HIS_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             KEY_HIS_NGAY_DONG_BO + " TEXT, " +
             KEY_HIS_NAME + " TEXT, " +
             KEY_HIS_CONTENT + " TEXT, " +
+            KEY_HIS_BEGIN_TIME + " TEXT, " +
+            KEY_HIS_END_TIME + " TEXT, " +
+            KEY_HIS_PLACE + " TEXT, " +
             KEY_HIS_TYPE + " INTEGER)";
 
-    public static final String GET_HISTORY_SYNC_UP = "select "+KEY_HIS_NGAY_DONG_BO+", "+KEY_HIS_NAME+", " + KEY_HIS_CONTENT + " " +
+    public static final String GET_HISTORY_SYNC_UP = "select "+
+            KEY_HIS_NGAY_DONG_BO+", "+
+            KEY_HIS_NAME+", " +
+            KEY_HIS_CONTENT + ", " +
+            KEY_HIS_BEGIN_TIME + ", " +
+            KEY_HIS_END_TIME + ", " +
+            KEY_HIS_PLACE + ", " +
+            KEY_HIS_TYPE + " " +
             "from " + TABLE_HISTORY + " " +
             "where " + KEY_HIS_TYPE +"  = '0' " +
             "order by " + KEY_HIS_ID + " desc";
-    public static final String GET_HISTORY_SYNC_DOWN = "select " +
-            KEY_HIS_NGAY_DONG_BO + ", " +
-            KEY_HIS_NAME + ", " +
-            KEY_HIS_CONTENT + " " +
+    public static final String GET_HISTORY_SYNC_DOWN = "select "+
+            KEY_HIS_NGAY_DONG_BO+", "+
+            KEY_HIS_NAME+", " +
+            KEY_HIS_CONTENT + ", " +
+            KEY_HIS_BEGIN_TIME + ", " +
+            KEY_HIS_END_TIME + ", " +
+            KEY_HIS_PLACE + ", " +
+            KEY_HIS_TYPE + " " +
             "from " + TABLE_HISTORY + " " +
-            "where " + KEY_HIS_TYPE + " = '1' " +
+            "where " + KEY_HIS_TYPE +"  = '1' " +
             "order by " + KEY_HIS_ID + " desc";
 
     private SQLiteDatabase db;
@@ -69,6 +87,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " +TABLE_TASK);
+        db.execSQL("DROP TABLE IF EXISTS " +TABLE_HISTORY);
+
+        onCreate(db);
     }
 
     private void open() {
@@ -189,8 +211,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     //history db method
-    public ArrayList<String> getHistorys(String sql) {
-        ArrayList<String> list = new ArrayList<>();
+    public ArrayList<History> getHistorys(String sql) {
+        ArrayList<History> list = new ArrayList<>();
         Cursor cursor = getAll(sql);
         if(cursor != null) {
             while(cursor.moveToNext()) {
@@ -201,24 +223,54 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return list;
     }
 
-    public long insertHistory(java.util.Date ngayDongBo, String taskName, String taskContent, int taskType) {
-        ContentValues values = new ContentValues();
-        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm aa");
-        values.put(KEY_HIS_NGAY_DONG_BO, dateTimeFormat.format(ngayDongBo));
-        values.put(KEY_HIS_NAME, taskName);
-        values.put(KEY_HIS_CONTENT, taskContent);
-        values.put(KEY_HIS_TYPE, taskType);
-        return insert(TABLE_HISTORY, values);
+    public long insertHistory(History history) {
+        return insert(TABLE_HISTORY, historyToValues(history));
     }
 
     public boolean deleteHistory(String where) {
         return delete(TABLE_HISTORY, where);
     }
 
-    private String cursorToHistory(Cursor cursor) {
-        return String.format("%-25s%s - %s",
-                cursor.getString(0),
-                cursor.getString(1),
-                cursor.getString(2));
+    private History cursorToHistory(Cursor cursor) {
+        History history = new History();
+        history.setNgayDongBo(convertStringToDate(cursor.getString(cursor.getColumnIndex(KEY_HIS_NGAY_DONG_BO)), "dd/MM/yyyy hh:mm aa"));
+        history.setHisName(cursor.getString(cursor.getColumnIndex(KEY_HIS_NAME)));
+        history.setHisContent(cursor.getString(2));
+        history.setHisBTime(convertStringToDate(cursor.getString(3), "dd/MM/yyyy hh:mm aa"));
+        history.setHisETime(convertStringToDate(cursor.getString(4), "dd/MM/yyyy hh:mm aa"));
+        history.setHisPlace(cursor.getString(cursor.getColumnIndex(KEY_HIS_PLACE)));
+        history.setHisType(cursor.getInt(cursor.getColumnIndex(KEY_HIS_TYPE)));
+        return history;
+    }
+
+    private ContentValues historyToValues(History history){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_HIS_NGAY_DONG_BO, convertDateToString(history.getNgayDongBo(), "dd/MM/yyyy hh:mm aa"));
+        contentValues.put(KEY_HIS_NAME, history.getHisName());
+        contentValues.put(KEY_HIS_CONTENT, history.getHisContent());
+        contentValues.put(KEY_HIS_BEGIN_TIME, convertDateToString(history.getHisBTime(), "dd/MM/yyyy hh:mm aa"));
+        if(convertDateToString(history.getHisETime(), "dd/MM/yyyy hh:mm aa") == null) {
+            contentValues.put(KEY_HIS_END_TIME, convertDateToString(history.getHisBTime(), "dd/MM/yyyy hh:mm aa"));
+        }else {
+            contentValues.put(KEY_HIS_END_TIME, convertDateToString(history.getHisETime(), "dd/MM/yyyy hh:mm aa"));
+        }
+        contentValues.put(KEY_HIS_PLACE, history.getHisPlace());
+        contentValues.put(KEY_HIS_TYPE, history.getHisType());
+        return contentValues;
+    }
+
+    private java.util.Date convertStringToDate(String date, String strDateFormat) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(strDateFormat);
+        try {
+            return simpleDateFormat.parse(date);
+        } catch (ParseException e) {
+            Log.e("Parse Date Exception", e.getMessage());
+            return null;
+        }
+    }
+
+    private String convertDateToString(java.util.Date date, String dateFormat) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+        return simpleDateFormat.format(date);
     }
 }

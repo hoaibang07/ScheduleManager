@@ -3,23 +3,25 @@ package husc.se.dcopen.calendarsync;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TabHost;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class SyncHistoryFragment extends Fragment {
-    private TextView tvHisSyncUp;
-    private TextView tvHisSyncDown;
+    private ListView lvHisSyncUp;
+    private ListView lvHisSyncDown;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sync_history, container, false);
+        lvHisSyncUp = (ListView)view.findViewById(R.id.lv_his_sync_up);
+
+        lvHisSyncDown = (ListView)view.findViewById(R.id.lv_his_sync_down);
 
         final TabHost tabHost = (TabHost)view.findViewById(R.id.tabHost);
         tabHost.setup();
@@ -36,27 +38,19 @@ public class SyncHistoryFragment extends Fragment {
         tabHost.addTab(spec);
 
         tabHost.setCurrentTab(0);
-
-        tvHisSyncUp = (TextView)view.findViewById(R.id.tv_his_sync_up);
-        tvHisSyncUp.setMovementMethod(new ScrollingMovementMethod());
-        tvHisSyncDown = (TextView)view.findViewById(R.id.tv_his_sync_down);
-        tvHisSyncDown.setMovementMethod(new ScrollingMovementMethod());
-
         loadHistory();
         return view;
     }
 
     private void loadHistory() {
         DatabaseHelper db = new DatabaseHelper(getActivity());
-        ArrayList<String> listHisSyncUp = db.getHistorys(db.GET_HISTORY_SYNC_UP);
-        ArrayList<String> listHisSyncDown = db.getHistorys(db.GET_HISTORY_SYNC_DOWN);
+        ArrayList<History> listHisSyncUp = db.getHistorys(db.GET_HISTORY_SYNC_UP);
+        ArrayList<History> listHisSyncDown = db.getHistorys(db.GET_HISTORY_SYNC_DOWN);
 
-        for(String item : listHisSyncUp) {
-            tvHisSyncUp.append(item + "\n");
-        }
+        HisArrayAdapter array1 = new HisArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, listHisSyncUp);
+        HisArrayAdapter array2 = new HisArrayAdapter(getActivity(), android.R.layout.simple_list_item_1, listHisSyncDown);
 
-        for (String item : listHisSyncDown) {
-            tvHisSyncDown.append(item + "\n");
-        }
+        lvHisSyncUp.setAdapter(array1);
+        lvHisSyncDown.setAdapter(array2);
     }
 }
