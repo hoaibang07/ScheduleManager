@@ -11,16 +11,26 @@ namespace ServerAndClient
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.Runtime.Serialization;
+
+    [DataContract]
     public partial class Task
     {
+        [DataMember]
         public string ID { get; set; }
+        [DataMember]
         public string TaskName { get; set; }
+        [DataMember]
         public string TaskContent { get; set; }
+        [DataMember]
         public System.DateTime BeginTime { get; set; }
+        [DataMember]
         public System.DateTime EndTime { get; set; }
+        [DataMember]
         public int Type { get; set; }
+        [DataMember]
         public string AccountName { get; set; }
+        [DataMember]
         public string Place { get; set; }
     }
 }
