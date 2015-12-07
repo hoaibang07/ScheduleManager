@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit http://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAOxhda9lwI0iawHHwu1xVeQAAAAACAAAAAAAQZgAAAAEAACAAAABVcKKPMiTdq7lWeSCH4R0q8X1Zb0sb4TIhvCoOMijRggAAAAAOgAAAAAIAACAAAADqtdRwHz0hTFwkfKu8qajyhrsdKXn4j0j4wxqJ33fGMDAAAABAMs5M2cYVYC5guySnGatRJ/1Vioj3Inn/fsk/W2VdgyHd466x8kLvzjh9lgxjcElAAAAAaOd0/unFKcF6984HGNMY/sXL98APHFU9Qy4EHW+Qa8XhmcLMqPXAj/KFvX9DAyBBFP6XKAc+avFwF+/DjaWvww==</EncryptedPassword>
+    <_PublishTargetUrl>ftp://nckh.somee.com/www.nckh.somee.com/</_PublishTargetUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="bin/EntityFramework.dll">
+      <publishTime>12/01/2015 16:27:32</publishTime>
+    </File>
+    <File Include="bin/Newtonsoft.Json.dll">
+      <publishTime>12/05/2015 15:34:59</publishTime>
+    </File>
+    <File Include="bin/ServerAndClient.dll">
+      <publishTime>12/06/2015 17:33:32</publishTime>
+    </File>
+    <File Include="packages.config">
+      <publishTime>12/06/2015 11:26:06</publishTime>
+    </File>
+    <File Include="Server.svc">
+      <publishTime>12/01/2015 16:27:31</publishTime>
+    </File>
+    <File Include="TaskMDB.edmx.diagram">
+      <publishTime>12/01/2015 16:27:31</publishTime>
+    </File>
+    <File Include="Web.config">
+      <publishTime>12/05/2015 16:05:09</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

@@ -5,3 +5,13 @@ D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\obj\Release\ServerAndClient.pdb
 D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\bin\EntityFramework.dll
 D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\bin\EntityFramework.xml
 D:\DU AN\Asp.net\ServerAndClient\ServerAndClient\obj\Release\ServerAndClient.csprojResolveAssemblyReference.cache
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\obj\Release\ServerAndClient.csprojResolveAssemblyReference.cache
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\obj\Release\ServerAndClient.dll
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\obj\Release\ServerAndClient.pdb
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\ServerAndClient.dll.config
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\ServerAndClient.dll
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\ServerAndClient.pdb
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\EntityFramework.dll
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\EntityFramework.xml
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\Newtonsoft.Json.dll
+C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\Newtonsoft.Json.xml

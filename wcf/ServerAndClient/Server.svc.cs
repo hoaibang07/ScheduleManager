@@ -24,33 +24,65 @@ namespace ServerAndClient
                         select x.AccountID;
             if (query.Count() == 1)
                 return true;
-            else
-                return false;
+            return false;
         }
 
 
-        public List<Task> DownSync(string userName)
+        public List<Task> DownSync(string usr)
         {
             TaskMDBEntities db = new TaskMDBEntities();
             var query = from t in db.Tasks
-                        where t.AccountName == userName
+                        where t.AccountName == usr && t.Type==1
                         select t;
             List<Task> ts = query.ToList<Task>();
             return ts;
         }
 
-        public bool UpSync(string userName, Task t)
+        public string UpSync(DuLieu data)
         {
-            try
+            string usr = data.userName;
+            string pwd = data.password;
+            Task task = new Task();
+            //task = Newtonsoft.Json.JsonConvert.DeserializeObject<Task>(tsk);
+            task = data.task;
+            if (Login(usr, pwd))
             {
-                TaskMDBEntities db = new TaskMDBEntities();
-                Task t0 = new Task();
-                t0 = t;
-                db.Tasks.Add(t0);
-                db.SaveChanges();
-                return true;
+                try
+                {
+                    TaskMDBEntities db = new TaskMDBEntities();
+                    string id = task.ID;
+                    var query = from x in db.Tasks
+                                where x.ID == id
+                                select x;
+                    if (query.ToList().Count==0)
+                    {
+                        // Neu khong ton tai
+                        Task t0 = new Task();
+                        t0 = task;
+                        db.Tasks.Add(t0);
+                        db.SaveChanges();
+                        return "OK - Da them";
+                    }
+                    else
+                    {
+                        // Neu ton tai
+                        Task c = (from x in db.Tasks
+                                  where x.ID == id
+                                  select x).FirstOrDefault();
+                        c.Place = task.Place;
+                        c.TaskContent = task.TaskContent;
+                        c.TaskName = task.TaskName;
+                        c.BeginTime = task.BeginTime;
+                        c.EndTime = task.EndTime;
+                        c.Type = task.Type;
+                        db.SaveChanges();
+                        return "OK - Da sua";
+                    }
+                    
+                }
+                catch (Exception ex) { return ex.Message; }
             }
-            catch { return false; }
+            return "Dang nhap that bai. Chi tiet: Username=" + usr + ", Password=" + pwd;
         }
     }
 }
