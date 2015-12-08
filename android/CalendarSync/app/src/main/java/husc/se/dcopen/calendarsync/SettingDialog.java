@@ -11,7 +11,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class SettingDialog extends DialogFragment {
     private CustomSeekBar seekBarSyncUp;
@@ -22,6 +21,7 @@ public class SettingDialog extends DialogFragment {
     private Button btnSave;
     private LineColorPicker pickerSync;
     private LineColorPicker pickerNoSync;
+    private LineColorPicker pickerTaskToDate;
 
     private Settings settings;
     private int numberDateSyncUp, numberDateSyncDown;
@@ -43,6 +43,7 @@ public class SettingDialog extends DialogFragment {
         btnSave = (Button)dialog.findViewById(R.id.btn_setting_save);
         pickerSync = (LineColorPicker)dialog.findViewById(R.id.picker_sync);
         pickerNoSync = (LineColorPicker)dialog.findViewById(R.id.picker_nosync);
+        pickerTaskToDate = (LineColorPicker)dialog.findViewById(R.id.picker_task_todate);
 
         seekBarSyncUp.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -101,9 +102,9 @@ public class SettingDialog extends DialogFragment {
             public void onClick(View v) {
                 settings.putSyncColor(pickerSync.getColor());
                 settings.putNoSyncColor(pickerNoSync.getColor());
+                settings.putTaskToDateColor(pickerTaskToDate.getColor());
                 settings.putNumberDateSyncUp(numberDateSyncUp);
                 settings.putNumberDateSyncDown(numberDateSyncDown);
-                Toast.makeText(getActivity(), "Lưu thành công", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent("Setting");
                 getContext().sendBroadcast(intent);
@@ -118,11 +119,13 @@ public class SettingDialog extends DialogFragment {
         int ngayDown = settings.getNumberDateSyncDown();
         int colorSync = settings.getSyncColor();
         int colorNoSync = settings.getNoSyncColor();
+        int colorTaskToDate = settings.getTaskToDateColor();
 
         seekBarSyncUp.setProgress(ngayUp + 30);
         seekBarSyncDown.setProgress(ngayDown + 30);
         pickerSync.setSelectedColor(colorSync);
         pickerNoSync.setSelectedColor(colorNoSync);
+        pickerTaskToDate.setSelectedColor(colorTaskToDate);
 
         return dialog;
     }

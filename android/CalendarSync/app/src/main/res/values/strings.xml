@@ -32,4 +32,5 @@
     <string name="close_drawer">Close</string>
     <string name="select_deselect">Chọn/Bỏ chọn tất cả</string>
     <string name="cac_cong_viec_da_dong_bo">Các công việc vừa được đồng bộ</string>
+    <string name="task_todate">Các công việc trong ngày</string>
 </resources>

@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -24,11 +25,11 @@ public class HomeFragment extends Fragment {
     private ListView listView;
     private TextView tv;
     private BroadcastReceiver updateReceiver;
+    private BroadcastReceiver settingReceiver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         updateReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -53,7 +54,15 @@ public class HomeFragment extends Fragment {
                 }
             }
         };
+        settingReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                TaskArrayAdapter taskArrayAdapter = (TaskArrayAdapter)listView.getAdapter();
+                taskArrayAdapter.notifyDataSetChanged();
+            }
+        };
         getActivity().registerReceiver(updateReceiver, new IntentFilter("AddTask"));
+        getActivity().registerReceiver(settingReceiver, new IntentFilter("Setting"));
     }
 
     @Nullable
@@ -62,6 +71,14 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         listView = (ListView)view.findViewById(R.id.lv_cong_viec_trong_ngay);
         tv = (TextView)view.findViewById(R.id.tv_cong_viec_trong_ngay);
+        view.findViewById(R.id.btn_add_task).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddTaskDialog dialog = new AddTaskDialog(getActivity());
+                dialog.show();
+            }
+        });
+
 
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -117,6 +134,8 @@ public class HomeFragment extends Fragment {
             final TextView tvTaskName = (TextView)convertView.findViewById(R.id.tv_task_title_date);
             final TextView tvTaskContent = (TextView)convertView.findViewById(R.id.tv_task_content_date);
             final TextView tvTaskPlace = (TextView)convertView.findViewById(R.id.tv_task_place_date);
+            final LinearLayout linearLayout = (LinearLayout)convertView.findViewById(R.id.linear_task);
+            linearLayout.setBackgroundColor(new Settings(getActivity()).getTaskToDateColor());
 
             tvTaskName.setText(task.getTaskName() + "("+convertToStringTime(task.getBeginTime())+" - "+
                     convertToStringTime(task.getEndTime()) + ")");
@@ -144,6 +163,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onDestroy() {
         getActivity().unregisterReceiver(updateReceiver);
+        getActivity().unregisterReceiver(settingReceiver);
         super.onDestroy();
     }
 

@@ -24,9 +24,9 @@ public class JSONParser {
 
     private JSONParser() {}
 
-    public static ArrayList<Task> syncDown(String userName) throws IOException, JSONException {
+    public static ArrayList<Task> syncDown(String userName, int soNgay) throws IOException, JSONException {
         ArrayList<Task> listTask = new ArrayList<>();
-        String stringJSON = getStringJSON(ADDRESS+"DownSync/" +userName);
+        String stringJSON = getStringJSON(ADDRESS+"DownSync/" +userName + "/" + soNgay);
 
         if(stringJSON != null) {
             JSONObject jsonObject = new JSONObject(stringJSON);
@@ -70,24 +70,6 @@ public class JSONParser {
         reader.close();
         return sb.toString();
     }
-
-    private static JSONObject convertTaskToJSOn(Task task) throws JSONException {
-        task.setAccountName("nguyenthanhduc");
-        task.setId("007");
-
-        JSONObject jsonTask = new JSONObject();
-        jsonTask.put("AccountName", task.getAccountName());
-        jsonTask.put("BeginTime", "/Date(" + task.getBeginTime().getTime() + "-0500)/");
-        jsonTask.put("EndTime", "/Date(" + task.getEndTime().getTime() + "-0500)/");
-        jsonTask.put("ID", task.getId());
-        jsonTask.put("Place", task.getPlace());
-        jsonTask.put("TaskContent", task.getTaskContent());
-        jsonTask.put("TaskName", task.getTaskName());
-        jsonTask.put("Type", task.getType());
-
-        return jsonTask;
-    }
-
 
     private static Task convertJSONtoTask(JSONObject jsonObject) {
         try {

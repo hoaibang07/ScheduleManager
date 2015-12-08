@@ -3,14 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="husc.se.dcopen.calendarsync.MainActivity">
 
-    <item android:id="@+id/action_add"
-        android:title="@string/add"
-        android:orderInCategory="100"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_add"/>
-    <item android:id="@+id/action_sync_up"
-        android:title="@string/sync_up"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
+    <!--<item android:id="@+id/action_add"-->
+        <!--android:title="@string/add"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="always"-->
+        <!--android:icon="@drawable/ic_add"/>-->
+    <!--<item android:id="@+id/action_sync_up"-->
+        <!--android:title="@string/sync_up"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="ifRoom" />-->
 
 </menu>

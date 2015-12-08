@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private ActionBar actionBar;
     private DrawerLayout drawerLayout;
     private LinearLayout navMenu;
-    private MenuItem mniAdd;
-    private MenuItem mniSyncUp;
+//    private MenuItem mniAdd;
+//    private MenuItem mniSyncUp;
     private SyncUpFragment syncUpFragment;
 
     private String m_accountName;
@@ -85,10 +85,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        mniAdd = menu.findItem(R.id.action_add);
-        mniSyncUp = menu.findItem(R.id.action_sync_up);
-        mniAdd.setVisible(true);
-        mniSyncUp.setVisible(false);
+//        mniAdd = menu.findItem(R.id.action_add);
+//        mniSyncUp = menu.findItem(R.id.action_sync_up);
+//        mniAdd.setVisible(true);
+//        mniSyncUp.setVisible(false);
         return true;
     }
 
@@ -96,17 +96,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            if(drawerLayout.isDrawerOpen(navMenu)) {
+            if (drawerLayout.isDrawerOpen(navMenu)) {
                 drawerLayout.closeDrawer(navMenu);
             } else {
                 drawerLayout.openDrawer(navMenu);
             }
-        } else if (id == R.id.action_add) {
-                AddTaskDialog dialog = new AddTaskDialog(MainActivity.this);
-                dialog.show();
-        } else if(id == R.id.action_sync_up) {
-            Intent intent = new Intent("SyncUp");
-            sendBroadcast(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -119,8 +113,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
-        mniAdd.setVisible(true);
-        mniSyncUp.setVisible(false);
         actionBar.setSubtitle("Trang chủ");
         drawerLayout.closeDrawer(navMenu);
     }
@@ -136,8 +128,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
-        mniAdd.setVisible(false);
-        mniSyncUp.setVisible(true);
         actionBar.setSubtitle("Chọn sự kiện cần đồng bộ lên");
         drawerLayout.closeDrawer(navMenu);
     }
@@ -156,8 +146,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
-        mniAdd.setVisible(false);
-        mniSyncUp.setVisible(false);
         actionBar.setSubtitle("Lịch sử đồng bộ");
         drawerLayout.closeDrawer(navMenu);
     }
@@ -217,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog createAlertDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Thoát");
-        builder.setIcon(android.R.id.icon);
         builder.setMessage("Bạn có thực sự muốn thoát?");
         builder.setCancelable(false);
         builder.setPositiveButton("Có", new DialogInterface.OnClickListener() {
@@ -253,8 +240,9 @@ public class MainActivity extends AppCompatActivity {
             String userName = params[0];
             ArrayList<Task> listTask = null;
             ArrayList<History> listHistory = new ArrayList<History>();
+
             try {
-                listTask = JSONParser.syncDown(userName);
+                listTask = JSONParser.syncDown(userName, new Settings(MainActivity.this).getNumberDateSyncDown());
                 publishProgress(30);
                 CalendarSupport calendarSupport = new CalendarSupport(MainActivity.this);
                 for(int i = 0; i < listTask.size(); i++) {
@@ -282,7 +270,11 @@ public class MainActivity extends AppCompatActivity {
                     listHistory.add(history);
                     db.insertHistory(history);
 
-                    publishProgress(i* 100/listTask.size());
+                    if((i* 100/listTask.size() + 30) <= 100) {
+                        publishProgress(i* 100/listTask.size() + 30);
+                    } else {
+                        publishProgress(100);
+                    }
                     if(isCancelled()) break;
                 }
                 publishProgress(100);

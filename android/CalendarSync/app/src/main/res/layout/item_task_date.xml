@@ -5,7 +5,10 @@
     android:gravity="center"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:background="@drawable/button_transparent_no_border">
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:background="@drawable/button_transparent_no_border"
+    android:id="@+id/linear_task">
     <TextView
         android:id="@+id/tv_task_title_date"
         android:layout_width="fill_parent"

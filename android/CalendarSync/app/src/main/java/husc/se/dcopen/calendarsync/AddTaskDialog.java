@@ -147,9 +147,9 @@ public class AddTaskDialog extends Dialog {
                 int minute = Integer.parseInt(beginTime.substring(3, 5));
                 String aa = beginTime.substring(6);
 
-                if(aa.compareToIgnoreCase("AM") == 0) {
+                if(aa.compareToIgnoreCase("AM") == 0 || aa.compareToIgnoreCase("SA") == 0) {
                     if(hourOfDay == 12) hourOfDay = 0;
-                } else if(aa.compareToIgnoreCase("PM") == 0){
+                } else if(aa.compareToIgnoreCase("PM") == 0 || aa.compareToIgnoreCase("CH") == 0){
                     if(hourOfDay != 12) hourOfDay += 12;
                 }
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(),

@@ -14,6 +14,7 @@ public class Settings {
     public static final String NO_SYNC_COLOR = "NoSyncColor";
     public static final String NUMBER_DATE_SYNC_UP = "NumberDateSyncUp";
     public static final String NUMBER_DATE_SYNC_DOWN = "NumberDateSyncDown";
+    public static final String TASK_TODATE_COLOR = "TaskToDateColor";
 
     private SharedPreferences sharedPreferences;
 
@@ -56,6 +57,13 @@ public class Settings {
         return this;
     }
 
+    public Settings putTaskToDateColor(int color) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(TASK_TODATE_COLOR, color);
+        editor.commit();
+        return this;
+    }
+
     public Settings putNumberDateSyncUp(int numberDate) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(NUMBER_DATE_SYNC_UP, numberDate);
@@ -88,6 +96,10 @@ public class Settings {
 
     public int getNoSyncColor() {
         return sharedPreferences.getInt(NO_SYNC_COLOR, Color.parseColor("#9e9e9e"));
+    }
+
+    public int getTaskToDateColor() {
+        return sharedPreferences.getInt(TASK_TODATE_COLOR, Color.parseColor("#009688"));
     }
 
     public int getNumberDateSyncUp() {

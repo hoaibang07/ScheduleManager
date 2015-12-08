@@ -181,5 +181,26 @@
                 android:layout_alignParentStart="true"
                 android:layout_marginBottom="10dp"/>
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="@string/task_todate"/>
+            <husc.se.dcopen.calendarsync.LineColorPicker
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/picker_task_todate"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                app:colors="@array/rainbow"
+                app:selectedColorIndex="3"
+                app:orientation="horizontal"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="10dp"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
