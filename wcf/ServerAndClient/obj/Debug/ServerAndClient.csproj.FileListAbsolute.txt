@@ -12,6 +12,5 @@ C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\EntityFramework.dll
 C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\EntityFramework.xml
 C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\obj\Debug\ServerAndClient.dll
 C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\obj\Debug\ServerAndClient.pdb
-C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\obj\Debug\ServerAndClient.csprojResolveAssemblyReference.cache
 C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\Newtonsoft.Json.dll
 C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\Newtonsoft.Json.xml

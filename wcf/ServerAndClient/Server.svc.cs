@@ -28,11 +28,26 @@ namespace ServerAndClient
         }
 
 
-        public List<Task> DownSync(string usr)
+        public List<Task> DownSync(string usr, string dis)
         {
+            int distance = int.Parse(dis);
+            DateTime temp = DateTime.Now;
+            DateTime now = new DateTime(temp.Year, temp.Month, temp.Day);
+            DateTime begin, end;
+            if (distance>=0)
+            {
+                begin = now;
+                end = begin.AddDays(distance);
+
+            }
+            else
+            {
+                end = now;
+                begin = end.AddDays(distance);
+            }
             TaskMDBEntities db = new TaskMDBEntities();
             var query = from t in db.Tasks
-                        where t.AccountName == usr && t.Type==1
+                        where t.AccountName == usr && t.Type == 1 && t.BeginTime >= begin && t.EndTime <= end
                         select t;
             List<Task> ts = query.ToList<Task>();
             return ts;

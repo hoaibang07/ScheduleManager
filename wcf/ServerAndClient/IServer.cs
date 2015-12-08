@@ -17,8 +17,8 @@ namespace ServerAndClient
         [WebGet(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate="Login/{usr}/{pwd}", BodyStyle=WebMessageBodyStyle.Wrapped)]
         bool Login(String usr, String pwd);
         [OperationContract]
-        [WebGet(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "DownSync/{usr}", BodyStyle = WebMessageBodyStyle.Wrapped)]
-        List<Task> DownSync(String usr);
+        [WebGet(RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "DownSync/{usr}/{dis}", BodyStyle = WebMessageBodyStyle.Wrapped)]
+        List<Task> DownSync(String usr, String dis);
         [OperationContract]
         [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json)]
         string UpSync(DuLieu data);
