@@ -3,85 +3,88 @@
 <head>
 <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 <title>Task Manager</title>
+<style>
+	table {
+		border-collapse:collapse;
+		border-spacing:0;
+	}
+</style>
 </head>
-
 <body>
-<table width='100%' border='1'>
-
-  <tr>
-    <td width='81%' align='center'><h1>Task Manager</h1></td>
-    <td width='19%' rowspan='2' align='center' valign='top'>
-	<p>
-    <form id='form2' name='form2' method='post' action='home.php'>
-      <p>
-        <label for='textfield2'>Tài khoản</label>
-        <input type='text' name='txtAccount' id='textfield2' />
-      </p>
-      <p>
-        <label for='textfield3'>Mật khẩu</label>
-        <input type='password' name='txtPassword' id='textfield3' />
-      </p>
-      <p>
-        <input type='submit' name='btnLogin' id='button' value='Đăng nhập' />
-      </p>
-      
-    </form>
-	</p>
+	<h1 style="text-align:center">
+		Calendar Sync
+	</h1>
     <p>
-      <?php
-	  if (isset($_POST['btnLogin']))
-		{
-			if (autithencation())
-				echo "Xin chào, <b>" . $_POST['txtAccount'] . "</b>";
-			else 
-				echo "<br><u>Đăng nhập thất bại</u></br>";
-		}
-	   ?>
-      </p>
-    </td>
-  </tr>
-  <tr>
-            <?php
-	  if (isset($_POST['btnLogin']))
-	  	{
-			echo "<td height='491' valign='top'><table width='100%' border='1'>
-      <tr>
-        <th width='15%' scope='col'>Tên công việc</th>
-        <th width='34%' scope='col'>Nội dung công việc</th>
-        <th width='12%' scope='col'>TGBT</th>
-        <th width='12%' scope='col'>TGKT</th>
-        <th width='17%' scope='col'>Địa điểm</th>
-        <th width='10%' scope='col'>Loại</th>
-      </tr>";
-			$conn = new PDO('sqlsrv:Server=TaskMDB.mssql.somee.com;Database=TaskMDB', 'nguyenthanhduc06_SQLLogin_1', 'dvy245u9mu');
-
-			$stmt = $conn->prepare('SELECT TaskName, TaskContent, BeginTime, EndTime, Place, Type FROM Task WHERE AccountName = ?');
-			
-			$stmt->setFetchMode(PDO::FETCH_ASSOC);
-			
-			$stmt->bindParam(1, $temp);
-			$temp = $_POST['txtAccount'];
-			$stmt->execute();
-		
-
-			while($row = $stmt->fetch()) 
+		<?php
+			$showFormLogin = true;
+			if (isset($_POST['btnLogin']))
 			{
-				echo "<tr><td> $row[TaskName] </td><td> $row[TaskContent] </td><td> $row[BeginTime] </td><td> $row[EndTime] </td><td> $row[Place] </td><td>";
-				if($row['Type']==1)
-					echo "Nội bộ";
-				else
-					echo "Cá nhân";
-				echo "</td></tr>";	
+				if (autithencation()){
+						$showFormLogin = false;
+						echo "Xin chào, <b>" . $_POST['txtAccount'] . "</b>";
+					}
+				else{ 
+					$showFormLogin = true;				
+					echo "<br><u>Đăng nhập thất bại</u></br>";
+				
+				}
 			}
-			$conn =null;
-			echo  "</table></td>";
+		   
+			if ($showFormLogin)
+			{
+				echo "<form id='form2' name='form2' method='post' action='home.php'>
+				  <p>
+					<label for='textfield2'>Tài khoản</label>
+					<input type='text' name='txtAccount' id='textfield2' />
+				  </p>
+				  <p>
+					<label for='textfield3'>Mật khẩu</label>
+					<input type='password' name='txtPassword' id='textfield3' />
+				  </p>
+				  <p>
+					<input type='submit' name='btnLogin' id='button' value='Đăng nhập' />
+				  </p>
+				  
+				</form>";
+			}
+		?>
+	</p>
+
+	<?php
+	if (isset($_POST['btnLogin']))
+	{
+		echo "<td height='491' valign='top'><table width='100%' border='1'>
+			  <tr>
+				<th width='15%' scope='col'>Tên công việc</th>
+				<th width='34%' scope='col'>Nội dung công việc</th>
+				<th width='12%' scope='col'>Thời gian bắt đầu</th>
+				<th width='12%' scope='col'>Thời gian kết thúc</th>
+				<th width='17%' scope='col'>Địa điểm</th>
+				<th width='10%' scope='col'>Loại lịch</th>
+			  </tr>";
+		$conn = new PDO('sqlsrv:Server=TaskMDB.mssql.somee.com;Database=TaskMDB', 'nguyenthanhduc06_SQLLogin_1', 'dvy245u9mu');
+
+		$stmt = $conn->prepare('SELECT TaskName, TaskContent, BeginTime, EndTime, Place, Type FROM Task WHERE AccountName = ?');
+		
+		$stmt->setFetchMode(PDO::FETCH_ASSOC);
+		
+		$stmt->bindParam(1, $temp);
+		$temp = $_POST['txtAccount'];
+		$stmt->execute();
+	
+
+		while($row = $stmt->fetch()) 
+		{
+			if($row['Type']==1)
+				echo "<tr style='background:red'><td> $row[TaskName] </td><td> $row[TaskContent] </td><td> $row[BeginTime] </td><td> $row[EndTime] </td><td> $row[Place] </td><td>Lịch khoa";
+			else
+				echo "<tr style='background:green'><td> $row[TaskName] </td><td> $row[TaskContent] </td><td> $row[BeginTime] </td><td> $row[EndTime] </td><td> $row[Place] </td><td>Lịch giảng viên";
+			echo "</td></tr>";	
 		}
-	   ?>  
-
-  
-
-  </tr>
-</table>
+		$conn =null;
+		echo  "</table></td>";
+	}
+	?>  
 
 <?php 
 
