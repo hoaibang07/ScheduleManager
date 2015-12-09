@@ -8,6 +8,12 @@
 		border-collapse:collapse;
 		border-spacing:0;
 	}
+	tr:hover{
+		background-color: gray !important;
+	}
+	td, th{
+		padding: 5px 3px;
+	}
 </style>
 </head>
 <body>
@@ -54,7 +60,7 @@
 	if (isset($_POST['btnLogin']))
 	{
 		echo "<td height='491' valign='top'><table width='100%' border='1'>
-			  <tr>
+			  <tr style='background-color:black; color: white'>
 				<th width='15%' scope='col'>Tên công việc</th>
 				<th width='34%' scope='col'>Nội dung công việc</th>
 				<th width='12%' scope='col'>Thời gian bắt đầu</th>
@@ -78,7 +84,7 @@
 			if($row['Type']==1)
 				echo "<tr style='background:red'><td> $row[TaskName] </td><td> $row[TaskContent] </td><td> $row[BeginTime] </td><td> $row[EndTime] </td><td> $row[Place] </td><td>Lịch khoa";
 			else
-				echo "<tr style='background:green'><td> $row[TaskName] </td><td> $row[TaskContent] </td><td> $row[BeginTime] </td><td> $row[EndTime] </td><td> $row[Place] </td><td>Lịch giảng viên";
+				echo "<tr style='background:#f57d94'><td> $row[TaskName] </td><td> $row[TaskContent] </td><td> $row[BeginTime] </td><td> $row[EndTime] </td><td> $row[Place] </td><td>Lịch giảng viên";
 			echo "</td></tr>";	
 		}
 		$conn =null;
