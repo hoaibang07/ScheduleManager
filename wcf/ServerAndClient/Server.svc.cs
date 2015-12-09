@@ -33,21 +33,22 @@ namespace ServerAndClient
             int distance = int.Parse(dis);
             DateTime temp = DateTime.Now;
             DateTime now = new DateTime(temp.Year, temp.Month, temp.Day);
-            DateTime begin, end;
-            if (distance>=0)
-            {
-                begin = now;
-                end = begin.AddDays(distance);
+            //DateTime begin, end;
+            //if (distance>=0)
+            //{
+            //    begin = now;
+            //    end = begin.AddDays(distance);
 
-            }
-            else
-            {
-                end = now;
-                begin = end.AddDays(distance);
-            }
+            //}
+            //else
+            //{
+            //    end = now;
+            //    begin = end.AddDays(distance);
+            //}
+            now = now.AddDays(distance);
             TaskMDBEntities db = new TaskMDBEntities();
             var query = from t in db.Tasks
-                        where t.AccountName == usr && t.Type == 1 && t.BeginTime >= begin && t.EndTime <= end
+                        where t.AccountName == usr && t.Type == 1 && (t.BeginTime >= now ||t.EndTime>=now)
                         select t;
             List<Task> ts = query.ToList<Task>();
             return ts;

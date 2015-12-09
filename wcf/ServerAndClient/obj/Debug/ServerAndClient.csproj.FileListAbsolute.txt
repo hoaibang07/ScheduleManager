@@ -14,3 +14,12 @@ C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\obj\Debug\ServerAndClient.dll
 C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\obj\Debug\ServerAndClient.pdb
 C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\Newtonsoft.Json.dll
 C:\Users\Acer\Downloads\wcf\wcf\ServerAndClient\bin\Newtonsoft.Json.xml
+D:\Projects\ScheduleManager\wcf\ServerAndClient\bin\ServerAndClient.dll
+D:\Projects\ScheduleManager\wcf\ServerAndClient\bin\ServerAndClient.pdb
+D:\Projects\ScheduleManager\wcf\ServerAndClient\bin\EntityFramework.dll
+D:\Projects\ScheduleManager\wcf\ServerAndClient\bin\Newtonsoft.Json.dll
+D:\Projects\ScheduleManager\wcf\ServerAndClient\bin\EntityFramework.xml
+D:\Projects\ScheduleManager\wcf\ServerAndClient\bin\Newtonsoft.Json.xml
+D:\Projects\ScheduleManager\wcf\ServerAndClient\obj\Debug\ServerAndClient.csprojResolveAssemblyReference.cache
+D:\Projects\ScheduleManager\wcf\ServerAndClient\obj\Debug\ServerAndClient.dll
+D:\Projects\ScheduleManager\wcf\ServerAndClient\obj\Debug\ServerAndClient.pdb

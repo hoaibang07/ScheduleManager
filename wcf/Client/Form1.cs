@@ -39,7 +39,7 @@ namespace Client
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            txtMethod.Text = "UpSync";
+            txtMethod.Text = "DownSync";
         }
 
         private async void btnClick_Click(object sender, EventArgs e)
@@ -52,7 +52,7 @@ namespace Client
             Task t = new Task() { ID ="0100",AccountName="nguyendung", BeginTime = new DateTime(2015,1,1), EndTime = new DateTime(2015, 12, 12), Place = "DHH", TaskContent = "Coi thi", TaskName = "Lich coi thi" , Type = 1};
             DuLieu dt = new DuLieu() { password = "nguyendung", userName = "nguyendung", task = t};
             //MessageBox.Show(JsonConvert.SerializeObject(dt, microsoftDateFormatSettings));
-            txtResult.Text = await WCFRESTServiceCall("POST", txtMethod.Text, dt);
+            txtResult.Text = await WCFRESTServiceCall("GET", txtMethod.Text, "nguyendung", "-15");
         }
     }
 }
